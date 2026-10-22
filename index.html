@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memorama: Fuerzas, Electricidad y Magnetismo</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1530;--panel:#142348;--line:#334974;--cyan:#67e8f9;--ink:#eff6ff;--muted:#bccbe3;--gold:#fcd34d;--green:#86efac}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(ellipse at top,#1b3471 0%,var(--bg) 65%);color:var(--ink);min-height:100vh}main{max-width:1100px;margin:auto;padding:22px 16px 50px}h1{font-size:clamp(1.6rem,4vw,2.5rem);margin:.15rem 0}.intro{color:var(--muted);margin:6px 0 18px}.toolbar,.scores,.bottom{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.toolbar{background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:16px}.toolbar label{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-weight:600}select,button{font:inherit}select{background:#0b1530;color:white;border:1px solid #7188b5;border-radius:9px;padding:10px;max-width:100%}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}.action{padding:11px 15px;border:0;border-radius:10px;background:var(--cyan);color:#0a1732;font-weight:800}.action.secondary{background:transparent;border:1px solid #84a7d4;color:var(--ink)}.scores{margin:18px 0;justify-content:space-between}.pill{border:1px solid var(--line);background:rgba(20,35,72,.9);border-radius:12px;padding:9px 13px}.pill strong{color:var(--gold)}#status{min-height:32px;color:var(--cyan);font-weight:650;margin:10px 0}.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.board.level-medium{grid-template-columns:repeat(4,minmax(0,1fr))}.board.level-hard{grid-template-columns:repeat(5,minmax(0,1fr))}.card{border:0;background:transparent;perspective:800px;aspect-ratio:1.18/1;min-height:115px;padding:0;color:inherit}.inner{height:100%;width:100%;position:relative;transform-style:preserve-3d;transition:transform .35s}.card.open .inner,.card.matched .inner{transform:rotateY(180deg)}.face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;box-shadow:0 5px 14px #0003;overflow-wrap:anywhere}.front{background:linear-gradient(135deg,#235cc4,#263887);border:2px solid #77a9ff;flex-direction:column;gap:6px;font-size:clamp(1.6rem,4vw,2.7rem)}.front small{font-size:.85rem;letter-spacing:.06em;font-weight:800;color:#e0edff}.back{background:#f4f8ff;color:#102044;border:2px solid #8ec5ec;transform:rotateY(180deg);font-weight:750;font-size:clamp(.75rem,1.45vw,1rem);line-height:1.25}.card.matched .back{background:#dcfce7;border:3px solid #22c55e;color:#14532d}.card:disabled{cursor:default}.help{color:var(--muted);font-size:.96rem;line-height:1.5}.bottom{margin-top:18px;justify-content:space-between}.results{margin-top:14px;padding:18px;border:2px solid var(--green);border-radius:16px;background:#123b39}.results[hidden]{display:none}.results h2{margin-top:0;color:var(--green)}footer{margin-top:24px;font-size:.85rem;color:#aebedd}@media(max-width:600px){main{padding:16px 10px}.board,.board.level-medium{gap:7px}.board.level-hard{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.card{min-height:99px;aspect-ratio:1/1}.face{padding:5px;border-radius:9px}.back{font-size:clamp(.66rem,2.4vw,.9rem)}.front small{font-size:.67rem}.scores{gap:6px}.pill{padding:7px 9px;font-size:.9rem}}@media(prefers-reduced-motion:reduce){.inner{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<div aria-hidden="true">⚡ 🧲 🚀</div><h1>Memorama de Física: grandes descubrimientos</h1><p class="intro">Segundo de secundaria · Electricidad, magnetismo, mecánica y dinámica. Encuentra la pareja entre el <strong>concepto o científico</strong> y su <strong>explicación o aportación</strong>.</p>
+<div class="toolbar"><label for="category">Tema <select id="category"><option value="electricidad">⚡ Electricidad</option><option value="magnetismo">🧲 Magnetismo</option><option value="cientificos">🔭 Científicos y aportaciones</option><option value="mixto" selected>🌟 Gran reto mixto</option></select></label><label for="difficulty">Dificultad <select id="difficulty"><option value="easy">Inicial · 6 parejas</option><option value="medium" selected>Intermedio · 8 parejas</option><option value="hard">Experto · 10 parejas</option></select></label><button class="action" id="newGame">🔀 Juego nuevo</button></div>
+<div class="scores"><div class="pill">🎯 Parejas: <strong id="pairs">0/8</strong></div><div class="pill">🔄 Intentos: <strong id="attempts">0</strong></div><div class="pill">⭐ Puntos: <strong id="score">0</strong></div><div class="pill">⏱️ Tiempo: <strong id="clock">00:00</strong></div></div>
+<div role="status" aria-live="polite" id="status">Selecciona dos tarjetas para encontrar una pareja.</div><section class="board" id="board" aria-label="Tarjetas del memorama"></section>
+<section class="results" id="results" hidden><h2>🏆 ¡Misión completada!</h2><p id="resultText"></p><button class="action" id="again">Jugar otra vez</button></section>
+<div class="bottom"><p class="help">💡 <strong>Regla:</strong> cada coincidencia suma 100 puntos. Un error no resta puntos. Lee ambas tarjetas antes de decidir; una pareja une una idea con su significado, no dos textos idénticos.</p><button class="action secondary" id="restart">↻ Reiniciar ronda</button></div>
+<footer>Juego didáctico · Funciona sin conexión una vez guardado el archivo HTML · Los pares se mezclan en cada ronda.</footer>
+</main>
+<script>
+'use strict';
+const bank={
+ electricidad:[
+ ['Carga eléctrica','Propiedad de la materia que puede ser positiva o negativa.'],
+ ['Ley de Coulomb','La fuerza eléctrica depende de las cargas y de la distancia entre ellas.'],
+ ['Corriente eléctrica','Cantidad de carga que atraviesa un conductor por unidad de tiempo.'],
+ ['Ley de Ohm','Relaciona voltaje, corriente y resistencia: V = I·R.'],
+ ['Voltaje','Diferencia de potencial eléctrico entre dos puntos.'],
+ ['Resistencia eléctrica','Oposición de un material al paso de la corriente.'],
+ ['Amperio','Unidad del Sistema Internacional para medir corriente eléctrica.'],
+ ['Circuito cerrado','Camino continuo que permite el paso de corriente eléctrica.'],
+ ['Aislante eléctrico','Material que dificulta el movimiento de cargas eléctricas.'],
+ ['Conductor eléctrico','Material que facilita el movimiento de cargas eléctricas.'],
+ ['Charles Coulomb','Estudió cuantitativamente la fuerza entre cargas eléctricas.'],
+ ['Alessandro Volta','Construyó la pila voltaica, fuente temprana de corriente continua.'],
+ ['Georg Ohm','Estableció la relación entre corriente, voltaje y resistencia.'],
+ ['Benjamin Franklin','Investigó fenómenos eléctricos y propuso signos para las cargas.']
+ ],
+ magnetismo:[
+ ['Campo magnético','Región donde se manifiestan fuerzas magnéticas.'],
+ ['Polos magnéticos','Extremos de un imán, llamados norte y sur.'],
+ ['Atracción magnética','Ocurre entre polos magnéticos opuestos.'],
+ ['Repulsión magnética','Ocurre entre polos magnéticos iguales.'],
+ ['Brújula','Su aguja imantada se orienta según el campo magnético local.'],
+ ['Electroimán','Imán producido por corriente eléctrica, normalmente en una bobina.'],
+ ['Inducción electromagnética','Una variación del flujo magnético puede inducir voltaje.'],
+ ['Hans Christian Ørsted','Descubrió que una corriente desvía la aguja de una brújula.'],
+ ['Michael Faraday','Descubrió la inducción electromagnética.'],
+ ['André-Marie Ampère','Estudió fuerzas entre corrientes eléctricas y el electromagnetismo.'],
+ ['James Clerk Maxwell','Unificó matemáticamente electricidad, magnetismo y luz.'],
+ ['William Gilbert','Investigó los imanes y describió a la Tierra como un gran imán.'],
+ ['Líneas de campo','Representación de la dirección del campo magnético en cada punto.'],
+ ['Motor eléctrico','Transforma energía eléctrica en movimiento mecánico.']
+ ],
+ cientificos:[
+ ['Arquímedes','Formuló principios de flotación y estudió las palancas.'],
+ ['Galileo Galilei','Estudió la caída de los cuerpos y el movimiento acelerado.'],
+ ['Isaac Newton','Formuló tres leyes del movimiento y la gravitación universal.'],
+ ['Johannes Kepler','Describió el movimiento planetario mediante tres leyes.'],
+ ['Christiaan Huygens','Investigó el movimiento circular y la fuerza centrípeta.'],
+ ['Robert Hooke','Enunció la ley de elasticidad de los resortes.'],
+ ['Blaise Pascal','Formuló un principio sobre la transmisión de presión en fluidos.'],
+ ['Charles Coulomb','Estudió la fuerza electrostática entre cargas.'],
+ ['Alessandro Volta','Inventó la pila voltaica.'],
+ ['Georg Ohm','Estableció la ley que relaciona voltaje, corriente y resistencia.'],
+ ['Hans Christian Ørsted','Mostró la relación entre electricidad y magnetismo.'],
+ ['Michael Faraday','Descubrió la inducción electromagnética.'],
+ ['André-Marie Ampère','Estudió cómo interactúan las corrientes eléctricas.'],
+ ['James Clerk Maxwell','Formuló las ecuaciones clásicas del electromagnetismo.'],
+ ['Nikola Tesla','Desarrolló importantes sistemas de corriente alterna y motores.'],
+ ['Heinrich Hertz','Demostró experimentalmente la existencia de ondas electromagnéticas.']
+ ]
+};
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let cards=[],open=[],matches=0,attempts=0,points=0,seconds=0,timer=null,started=false,locked=false,round=0,delay=null;
+function selectedBank(){const cat=$('category').value; if(cat==='mixto'){
+// Balanced round: combine all subjects, with scientists drawn from across scientific fields.
+const a=shuffle([...bank.electricidad]).slice(0,4),b=shuffle([...bank.magnetismo]).slice(0,4),c=shuffle([...bank.cientificos]).slice(0,4);
+return shuffle([...a,...b,...c]);}
+return shuffle([...bank[cat]]);}
+function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function update(){const size=cards.length/2;$('pairs').textContent=matches+'/'+size;$('attempts').textContent=attempts;$('score').textContent=points;$('clock').textContent=formatTime(seconds);}
+function newGame(){round++;if(timer)clearInterval(timer);if(delay)clearTimeout(delay);timer=null;delay=null;seconds=0;started=false;locked=false;open=[];matches=0;attempts=0;points=0;$('results').hidden=true;
+let n={easy:6,medium:8,hard:10}[$('difficulty').value];let source=selectedBank().slice(0,n);cards=shuffle(source.flatMap((pair,id)=>[{pair:id,text:pair[0],kind:'Concepto o científico'},{pair:id,text:pair[1],kind:'Aportación o definición'}]));let board=$('board');board.replaceChildren();board.className='board level-'+$('difficulty').value;
+cards.forEach((data,i)=>{let btn=document.createElement('button');btn.type='button';btn.className='card';btn.setAttribute('aria-label','Tarjeta '+(i+1)+' oculta');let inner=document.createElement('div');inner.className='inner';let face=document.createElement('div');face.className='face front';face.innerHTML='<span aria-hidden="true">⚡🧲</span><small>FÍSICA</small>';let back=document.createElement('div');back.className='face back';back.textContent=data.text;inner.append(face,back);btn.append(inner);btn.addEventListener('click',()=>turn(i,btn));board.append(btn);});$('status').textContent='Selecciona dos tarjetas para encontrar una pareja.';update();}
+function beginClock(){if(started)return;started=true;timer=setInterval(()=>{seconds++;update()},1000)}
+function turn(i,button){if(locked||button.classList.contains('open')||button.classList.contains('matched'))return;beginClock();button.classList.add('open');button.setAttribute('aria-label',cards[i].text);open.push({i,button});if(open.length!==2)return;attempts++;locked=true;const [a,b]=open;
+if(cards[a.i].pair===cards[b.i].pair){points+=100;matches++;[a,b].forEach(e=>{e.button.classList.add('matched');e.button.disabled=true;});open=[];locked=false;$('status').textContent='✅ ¡Correcto! Relacionaste el concepto con su explicación.';update();if(matches===cards.length/2){clearInterval(timer);$('status').textContent='🏆 ¡Completaste el memorama!';$('resultText').textContent='Encontraste '+matches+' parejas en '+attempts+' intentos y '+formatTime(seconds)+'. Puntaje: '+points+'.';$('results').hidden=false;$('results').scrollIntoView({behavior:'smooth',block:'nearest'});}}
+else{$('status').textContent='🔎 No coinciden. Recuerda lo que dice cada tarjeta.';let current=round;delay=setTimeout(()=>{if(current!==round)return;[a,b].forEach(e=>{e.button.classList.remove('open');e.button.setAttribute('aria-label','Tarjeta '+(e.i+1)+' oculta')});open=[];locked=false;$('status').textContent='Intenta encontrar otra pareja.';},1450);update();}}
+$('newGame').addEventListener('click',newGame);$('restart').addEventListener('click',newGame);$('again').addEventListener('click',newGame);$('difficulty').addEventListener('change',newGame);$('category').addEventListener('change',newGame);newGame();
+</script>
+</body></html>
